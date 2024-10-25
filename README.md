@@ -35,6 +35,6 @@ Install
 =======
 
 ```!sh
-curl https://raw.githubusercontent.com/f0rk/batch-env/master/docker-run-env > ~/bin/docker-run-env
+curl https://raw.githubusercontent.com/f0rk/docker-run-env/master/docker-run-env > ~/bin/docker-run-env
 chmod +x ~/bin/docker-run-env
 ```
