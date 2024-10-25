@@ -1,0 +1,59 @@
+#!/usr/bin/env python
+
+import argparse
+import os
+import shutil
+import sys
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--event")
+parser.add_argument("command", nargs="*")
+
+args = parser.parse_args()
+
+new_environ = {}
+
+env_args = []
+for key, value in os.environ.items():
+    env_args.extend(
+        [
+            "-e",
+            key,
+        ],
+    )
+
+    new_environ[key] = value
+
+event_args = []
+
+if args.event:
+    if os.path.exists(args.event):
+        with open(args.event, "rt") as fp:
+            event_data = fp.read()
+
+    else:
+        event_data = args.event
+
+    event_args.extend(
+        [
+            "-e",
+            "EVENT",
+        ],
+    )
+
+    new_environ["EVENT"] = event_data
+
+extra_args = ["--network", "host"]
+extra_args.extend(env_args)
+extra_args.extend(event_args)
+
+command = ["docker", "run"] + extra_args + args.command[:]
+
+exec_path = command[0]
+if "/" not in exec_path:
+    maybe_exec_path = shutil.which(exec_path)
+    if maybe_exec_path:
+        exec_path = maybe_exec_path
+
+os.execve(exec_path, command, new_environ)
